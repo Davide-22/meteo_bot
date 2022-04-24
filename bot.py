@@ -5,7 +5,7 @@ import discord
 
 load_dotenv()
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-WHEATER_TOKEN = os.getenv('BOT_TOKEN')
+WHEATER_TOKEN = os.getenv('WHEATER_TOKEN')
 
 client = discord.Client()
 

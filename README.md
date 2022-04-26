@@ -1,1 +1,1 @@
-# meteo_bot
+#A discord bot for weather forecast

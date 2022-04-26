@@ -1,1 +1,1 @@
-#A discord bot for weather forecast
+# A discord bot for weather forecast

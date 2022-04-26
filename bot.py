@@ -79,7 +79,7 @@ async def on_message(message):
         min = weather["daily"][day]["temp"]["min"]
         max = weather["daily"][day]["temp"]["max"]
         desc = weather["daily"][day]["weather"][0]["description"]
-        msg = f"{city.capitalize()}\n{date}: {temp}°\nMin: {min}° Max: {max}°\n{desc.capitalize()}"
+        msg = f"{city.title()}\n{date}: {temp}°\nMin: {min}° Max: {max}°\n{desc.capitalize()}"
         await message.channel.send(msg)
         return
         

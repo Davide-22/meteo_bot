@@ -10,10 +10,28 @@ import requests
 import datetime
 
 load_dotenv()
+
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 SYNTAX_ERR = "Type £help for the syntax"
+CMD1 = "meteo"
+CMD2 = "today"
+
 client = discord.Client()
+
+def getMeteo(url):
+    weather = requests.get(url).json()
+    return weather
+
+def getLatLon(city):
+    url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&appid={WEATHER_TOKEN}"
+    weather = getMeteo(url)
+    print(weather)
+    if weather == []:
+        return -200,-200
+    lat = weather[0]['lat']
+    lon = weather[0]['lon']
+    return lat, lon
 
 @client.event
 async def on_ready():
@@ -30,11 +48,15 @@ async def on_message(message):
         return
     
     if user_message.lower() == "£help":
-        await message.channel.send("£meteo CITY_NAME N\nReturn the forecast in CITY_NAME, N days after today (0 <= N <= 7).")
+        with open("help.txt") as f:
+            msg = f.read().format(cmd1 = CMD1,cmd2 = CMD2)
+        await message.channel.send(msg)
         return
     
     m = user_message.split()
-    if m[0] == "£meteo":
+
+    #Daily forecast
+    if m[0] == F"£{CMD1}":
         day = 1
         city = ""
         date = "Tomorrow"
@@ -52,9 +74,12 @@ async def on_message(message):
                     if i != len(m)-2:
                         city += " "
                 assert day <= 7 and day >= 0
-                date = datetime.datetime.now()
-                date = date + datetime.timedelta(days=day)
-                date = date.strftime("%B %d %Y")
+                if day == 0:
+                    date = "Today"
+                elif day != 1:
+                    date = datetime.datetime.now()
+                    date = date + datetime.timedelta(days=day)
+                    date = date.strftime("%B %d %Y")
             except ValueError as e:
                 for i in range(1,len(m)):
                     city += m[i]
@@ -64,23 +89,63 @@ async def on_message(message):
                 print(e)
                 await message.channel.send(SYNTAX_ERR)
                 return
-        url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&appid={WEATHER_TOKEN}"
-        weather = requests.get(url).json()
-        print(url)
-        if weather == []:
+        lat, lon = getLatLon(city)
+        if lat == -200:
             await message.channel.send("Unknown city name")
             return
-            
-        lat = weather[0]['lat']
-        lon = weather[0]['lon']
         url = f"https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&units=metric&exclude=hourly,minutely&appid={WEATHER_TOKEN}"
-        weather = requests.get(url).json()
+        weather = getMeteo(url)
         temp = weather["daily"][day]["temp"]["day"]
         min = weather["daily"][day]["temp"]["min"]
         max = weather["daily"][day]["temp"]["max"]
+        max = weather["daily"][day]["temp"]["max"]
+        feels_like = weather["daily"][day]["feels_like"]["day"]
         desc = weather["daily"][day]["weather"][0]["description"]
-        msg = f"{city.title()}\n{date}: {temp}°\nMin: {min}° Max: {max}°\n{desc.capitalize()}"
+        msg = f"{city.title()}\n{date}: {temp}°\nMin: {min}° Max: {max}°\nFeels like: {feels_like}°\n{desc.capitalize()}"
         await message.channel.send(msg)
         return
+
+    #Hourly forecast
+    if m[0] == F"£{CMD2}":
+        limit = 15
+        city = ""
+        if len(m) == 1:
+            city = "roma"
+        elif len(m) == 2:
+            city = m[1]
+        else:
+            try:
+                limit = int(m[len(m)-1])
+                for i in range(1,len(m)-1):
+                    print(m[i])
+                    city += m[i]
+                    if i != len(m)-2:
+                        city += " "
+                assert limit <= 47 and limit >= 0
+            except ValueError as e:
+                for i in range(1,len(m)):
+                    city += m[i]
+                    if i != len(m)-1:
+                        city += " "
+            except AssertionError as e:
+                print(e)
+                await message.channel.send(SYNTAX_ERR)
+                return
+        lat, lon = getLatLon(city)
+        if lat == -200:
+            await message.channel.send("Unknown city name")
+            return
+        url = f"https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&units=metric&exclude=daily,minutely&appid={WEATHER_TOKEN}"
+        weather = getMeteo(url)
+        msg = f"{city.title()}\n"
+        for i in range(limit+1):
+            temp = weather["hourly"][i]["temp"]
+            feels_like = weather["hourly"][i]["feels_like"]
+            desc = weather["hourly"][i]["weather"][0]["description"]
+            date = datetime.datetime.fromtimestamp(weather["hourly"][i]["dt"])
+            msg += f"{date}: {temp}°\nFeels like: {feels_like}\n{desc.capitalize()}\n\n"
+        await message.channel.send(msg)
+        return
+        
         
 client.run(BOT_TOKEN)

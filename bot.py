@@ -2,7 +2,6 @@
 
 from http import client
 import os
-
 from dotenv import load_dotenv
 import discord
 import requests
@@ -15,6 +14,7 @@ WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 SYNT_ERR = "Type £help for the syntax"
 CMD1 = "meteo"
 CMD2 = "today"
+CMD3 = "poll"
 
 client = discord.Client()
 
@@ -55,7 +55,7 @@ async def on_message(message):
     m = user_message.split()
 
     #Daily forecast
-    if m[0] == F"£{CMD1}":
+    if m[0] == f"£{CMD1}":
         day = 1
         city = ""
         date = "Tomorrow"
@@ -98,14 +98,15 @@ async def on_message(message):
         min = weather["daily"][day]["temp"]["min"]
         max = weather["daily"][day]["temp"]["max"]
         max = weather["daily"][day]["temp"]["max"]
+        night = weather["daily"][day]["temp"]["night"]
         feels_like = weather["daily"][day]["feels_like"]["day"]
         desc = weather["daily"][day]["weather"][0]["description"]
-        msg = f"{city.title()}\n{date}: {temp}°\nMin: {min}° Max: {max}°\nFeels like: {feels_like}°\n{desc.capitalize()}"
+        msg = f"{city.title()}\n{date}\nDay: {temp}° Night:{night}°\nMin: {min}° Max: {max}°\nFeels like: {feels_like}°\n{desc.capitalize()}"
         await message.channel.send(msg)
         return
 
     #Hourly forecast
-    if m[0] == F"£{CMD2}":
+    if m[0] == f"£{CMD2}":
         limit = 15
         city = ""
         if len(m) == 1:
@@ -145,6 +146,28 @@ async def on_message(message):
             msg += f"{date}: {temp}°\nFeels like: {feels_like}\n{desc.capitalize()}\n\n"
         await message.channel.send(msg)
         return
-        
+    
+    #Air pollution
+    if m[0] == f"£{CMD3}":
+        poll_array = ["Good", "Fair", "Moderate", "Poor", "Very Poor"]
+        city = ""
+        if len(m) < 2:
+            await message.channel.send(SYNT_ERR)
+            return
+        for i in range(1,len(m)):
+                    print(m[i])
+                    city += m[i]
+                    if i != len(m)-2:
+                        city += " "
+        lat,lon = getLatLon(city)
+        if lat == -200:
+            await message.channel.send("Unknown city name")
+            return
+        url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={WEATHER_TOKEN}"
+        poll = getMeteo(url)
+        aq = poll_array[int(poll["list"][0]["main"]["aqi"])-1]
+        msg = f"{city.title()}\nAir quality: {aq}"
+        await message.channel.send(msg)
+        return
         
 client.run(BOT_TOKEN)

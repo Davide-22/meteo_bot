@@ -2,8 +2,7 @@
 
 from http import client
 import os
-from traceback import print_tb
-from xml.dom import SYNTAX_ERR
+
 from dotenv import load_dotenv
 import discord
 import requests
@@ -13,7 +12,7 @@ load_dotenv()
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
-SYNTAX_ERR = "Type £help for the syntax"
+SYNT_ERR = "Type £help for the syntax"
 CMD1 = "meteo"
 CMD2 = "today"
 
@@ -87,7 +86,7 @@ async def on_message(message):
                         city += " "
             except AssertionError as e:
                 print(e)
-                await message.channel.send(SYNTAX_ERR)
+                await message.channel.send(SYNT_ERR)
                 return
         lat, lon = getLatLon(city)
         if lat == -200:
@@ -129,7 +128,7 @@ async def on_message(message):
                         city += " "
             except AssertionError as e:
                 print(e)
-                await message.channel.send(SYNTAX_ERR)
+                await message.channel.send(SYNT_ERR)
                 return
         lat, lon = getLatLon(city)
         if lat == -200:

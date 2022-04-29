@@ -48,7 +48,7 @@ async def on_message(message):
     
     if user_message.lower() == "£help":
         with open("help.txt") as f:
-            msg = f.read().format(cmd1 = CMD1,cmd2 = CMD2)
+            msg = f.read().format(cmd1 = CMD1,cmd2 = CMD2,cmd3 = CMD3)
         await message.channel.send(msg)
         return
     

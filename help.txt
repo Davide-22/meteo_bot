@@ -4,3 +4,6 @@ Return the forecast in CITY_NAME (default Roma), N days after today (0 <= N <= 7
 £{cmd2}: 
 £{cmd2} CITY_NAME N
 Return the forecast of the following N hours (0 <= N <= 47, default 15) in CITY_NAME (default Roma).
+£{cmd3}:
+£{cmd3} CITY_NAME
+Return the air quality in CITY_NAME

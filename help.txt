@@ -1,9 +1,13 @@
 £{cmd1}: 
-£{cmd1} CITY_NAME N
-Return the forecast in CITY_NAME (default Roma), N days after today (0 <= N <= 7, default 1). 
+£{cmd1} CITY_NAME N -c COUNTRY_CODE
+Return the forecast in CITY_NAME (optional, default Roma), N days after today (0 <= N <= 7, optional, default 1). 
+The country can be specified (optional), using the -c flag and inserting the COUNTRY_CODE (ISO 3166). If -c is used, CITY_NAME and N are mandatory.
+
 £{cmd2}: 
 £{cmd2} CITY_NAME N
-Return the forecast of the following N hours (0 <= N <= 47, default 15) in CITY_NAME (default Roma).
+Return the forecast of the following N hours (0 <= N <= 47, optional, default 8) in CITY_NAME (optional, default Roma).
+The country can be specified (optional), using the -c flag and inserting the COUNTRY_CODE (ISO 3166). If -c is used, CITY_NAME and N are mandatory.
+
 £{cmd3}:
 £{cmd3} CITY_NAME
 Return the air quality in CITY_NAME

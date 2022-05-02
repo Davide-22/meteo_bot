@@ -351,4 +351,4 @@ MigrationBackup/
 
 venv/
 .env
-todo
+todo.txt

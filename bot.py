@@ -181,13 +181,17 @@ async def on_message(message):
     if m[0] == f"£{CMD3}":
         poll_array = ["Good", "Fair", "Moderate", "Poor", "Very Poor"]
         city = ""
-        if len(m) < 2:
+        v = 0
+        c = ""
+        if m[len(m)-1] == "-v":
+            v = 1
+        if len(m) < 2+v:
             await message.channel.send(SYNT_ERR)
             return
-        for i in range(1,len(m)):
+        for i in range(1,len(m)-v):
                     print(m[i])
                     city += m[i]
-                    if i != len(m)-1:
+                    if i != len(m)-v-1:
                         city += " "
         lat,lon, cityName = getLatLon(city)
         if lat == -200:
@@ -196,7 +200,17 @@ async def on_message(message):
         url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={WEATHER_TOKEN}"
         poll = getMeteo(url)
         aq = poll_array[int(poll["list"][0]["main"]["aqi"])-1]
-        msg = f"{cityName}\nAir quality: {aq}  "
+        if v == 1:
+            co = poll['list'][0]['components']['co']
+            no = poll['list'][0]['components']['no']
+            no2 = poll['list'][0]['components']['no2']
+            o3 = poll['list'][0]['components']['o3']
+            so2 = poll['list'][0]['components']['no2']
+            pm25 = poll['list'][0]['components']['pm2_5']
+            pm10 = poll['list'][0]['components']['pm10']
+            nh3 = poll['list'][0]['components']['nh3']
+            c = f"\nco: {co}\nno: {no}\nno2: {no2}\no3: {o3}\nso2: {so2}\npm2.5: {pm25}\npm10: {pm10}\nnh3: {nh3}"
+        msg = f"{cityName}\nAir quality: {aq}{c}"
         await message.channel.send(msg)
         return
         

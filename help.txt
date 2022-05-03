@@ -9,5 +9,7 @@ Return the forecast of the following N hours (0 <= N <= 47, optional, default 8)
 The country can be specified (optional), using the -c flag and inserting the COUNTRY_CODE (ISO 3166). If -c is used, CITY_NAME and N are mandatory.
 
 £{cmd3}:
-£{cmd3} CITY_NAME
-Return the air quality in CITY_NAME
+£{cmd3} CITY_NAME -v
+Return the air quality in CITY_NAME. The flag -v is optional, and if specified returns the relevant air components.
+The air quality can assume the following values, in order from the best to the worst:
+Good, Fair, Moderate, Poor, Very Poor  

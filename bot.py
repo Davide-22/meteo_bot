@@ -12,9 +12,13 @@ load_dotenv()
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 SYNT_ERR = "Type £help for the syntax"
-CMD1 = "w"
-CMD2 = "today"
-CMD3 = "poll"
+CMD1 = "w" #daily forecast command
+CMD2 = "today" #hourly forecast command
+CMD3 = "poll" #city pollution command
+
+weath_dict = {"clear sky":"\U00002600","few clouds":"\U0001F324","scattered clouds":"\U0001F325","broken clouds":"\U00002601","shower rain":"\U0001F327","rain":"\U0001F326","thunderstorm":"\U000026C8","snow":"\U0001F328","mist":"\U0001F32B"}
+weath_dict["light rain"] = "\U0001F326"
+weath_dict["overcast clouds"] = "\U00002601"
 
 client = discord.Client()
 
@@ -111,7 +115,11 @@ async def on_message(message):
         night = weather["daily"][day]["temp"]["night"]
         feels_like = weather["daily"][day]["feels_like"]["day"]
         desc = weather["daily"][day]["weather"][0]["description"]
-        msg = f"{cityName}\n{date}\nDay: {temp}° Night:{night}°\nMin: {min}° Max: {max}°\nFeels like: {feels_like}°\n{desc.capitalize()}"
+        if desc in weath_dict.keys():
+                emoji = " "+weath_dict[desc]
+        else: 
+            emoji = ""
+        msg = f"{cityName}\n{date}\nDay: {temp}° Night:{night}°\nMin: {min}° Max: {max}°\nFeels like: {feels_like}°\n{desc.capitalize()} {emoji}"
         await message.channel.send(msg)
         return
 
@@ -161,7 +169,11 @@ async def on_message(message):
             feels_like = weather["hourly"][i]["feels_like"]
             desc = weather["hourly"][i]["weather"][0]["description"]
             date = datetime.datetime.fromtimestamp(weather["hourly"][i]["dt"])
-            msg += f"{date}: {temp}°\nFeels like: {feels_like}°\n{desc.capitalize()}\n\n"
+            if desc in weath_dict.keys():
+                emoji = " "+weath_dict[desc]
+            else: 
+                emoji = ""
+            msg += f"{date}: {temp}°\nFeels like: {feels_like}°\n{desc.capitalize()}{emoji}\n\n"
         await message.channel.send(msg)
         return
     
@@ -184,7 +196,7 @@ async def on_message(message):
         url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={WEATHER_TOKEN}"
         poll = getMeteo(url)
         aq = poll_array[int(poll["list"][0]["main"]["aqi"])-1]
-        msg = f"{cityName}\nAir quality: {aq}"
+        msg = f"{cityName}\nAir quality: {aq}  "
         await message.channel.send(msg)
         return
         

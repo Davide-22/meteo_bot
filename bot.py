@@ -119,7 +119,7 @@ async def on_message(message):
                 emoji = " "+weath_dict[desc]
         else: 
             emoji = ""
-        msg = f"{cityName}\n{date}\nDay: {temp}° Night:{night}°\nMin: {min}° Max: {max}°\nFeels like: {feels_like}°\n{desc.capitalize()} {emoji}"
+        msg = f"{cityName}\n{date}\nDay: {temp}°  Night: {night}°\nMin: {min}°  Max: {max}°\nFeels like: {feels_like}°\n{desc.capitalize()} {emoji}"
         await message.channel.send(msg)
         return
 
@@ -169,11 +169,12 @@ async def on_message(message):
             feels_like = weather["hourly"][i]["feels_like"]
             desc = weather["hourly"][i]["weather"][0]["description"]
             date = datetime.datetime.fromtimestamp(weather["hourly"][i]["dt"])
+            date = date.strftime("%B %d %Y  %X")
             if desc in weath_dict.keys():
                 emoji = " "+weath_dict[desc]
             else: 
                 emoji = ""
-            msg += f"{date}: {temp}°\nFeels like: {feels_like}°\n{desc.capitalize()}{emoji}\n\n"
+            msg += f"{date}\n{temp}°\nFeels like: {feels_like}°\n{desc.capitalize()}{emoji}\n\n"
         await message.channel.send(msg)
         return
     

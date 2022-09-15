@@ -1,1 +1,1 @@
-# A discord bot to check the weather and the air quality
+# A discord bot to check the weather and the air quality!
